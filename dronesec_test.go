@@ -19,14 +19,17 @@ type MethodAndEndpoint struct {
 }
 
 var enpointsAndPayload = map[MethodAndEndpoint]string{
-	MethodAndEndpoint{"GET", "/api/user"}:                            `{"id":10,"login":"username","email":"","machine":false,"admin":false,"active":true,"avatar":"","syncing":false,"synced":12389,"created":1631169300,"updated":1631169400,"last_login":1631169500}`,
-	MethodAndEndpoint{"GET", "/api/repos/owner/repo/secrets/test"}:   `{"id":1,"repo_id":2,"name":"test"}`,
-	MethodAndEndpoint{"PATCH", "/api/repos/owner/repo/secrets/test"}: `{"id":2,"repo_id":2,"name":"test"}`,
+	MethodAndEndpoint{"GET", "/api/user"}:                             `{"id":10,"login":"username","email":"","machine":false,"admin":false,"active":true,"avatar":"","syncing":false,"synced":12389,"created":1631169300,"updated":1631169400,"last_login":1631169500}`,
+	MethodAndEndpoint{"GET", "/api/repos/owner/repo/secrets/test"}:    `{"id":1,"repo_id":2,"name":"test"}`,
+	MethodAndEndpoint{"POST", "/api/repos/owner/repo/secrets"}:        `{"message":"UNIQUE constraint failed: secrets.secret_repo_id, secrets.secret_name"}`,
+	MethodAndEndpoint{"PATCH", "/api/repos/owner/repo/secrets/test"}:  `{"id":2,"repo_id":2,"name":"test"}`,
+	MethodAndEndpoint{"DELETE", "/api/repos/owner/repo/secrets/test"}: `{"message":"sql: no rows in result set"}`,
+	// MethodAndEndpoint{"DELETE", "/api/repos/owner/repo/secrets/test"}: "", // There is not response if secret is found and deleted
 }
 
 const rawToken = "SUPERSECRETTOKEN"
 
-func TestNewDroneSec(t *testing.T) {
+func TestDroneSec(t *testing.T) {
 	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if strings.Split(token, " ")[1] != rawToken {
@@ -42,6 +45,21 @@ func TestNewDroneSec(t *testing.T) {
 		t.Fatal("Failed to build dronesec")
 	}
 	if err := ds.Create("test", "test"); err != nil {
+		for _, w := range l.Warnings {
+			t.Log(w)
+		}
+		for _, d := range l.Debugs {
+			t.Log(d)
+		}
+		t.Fatal(err)
+	}
+	if err := ds.Delete("test"); err != nil {
+		for _, w := range l.Warnings {
+			t.Log(w)
+		}
+		for _, d := range l.Debugs {
+			t.Log(d)
+		}
 		t.Fatal(err)
 	}
 }
@@ -63,6 +81,21 @@ func TestDroneSecWithRealEndpoint(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := ds.Create("test", "test"); err != nil {
+		for _, w := range l.Warnings {
+			t.Log(w)
+		}
+		for _, d := range l.Debugs {
+			t.Log(d)
+		}
+		t.Fatal(err)
+	}
+	if err := ds.Delete("test"); err != nil {
+		for _, w := range l.Warnings {
+			t.Log(w)
+		}
+		for _, d := range l.Debugs {
+			t.Log(d)
+		}
 		t.Fatal(err)
 	}
 }
