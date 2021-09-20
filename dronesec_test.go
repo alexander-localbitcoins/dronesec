@@ -51,8 +51,7 @@ func TestDroneSecWithRealEndpoint(t *testing.T) {
 	ds, err := NewDroneSec(os.Getenv("DRONE_REMOTE_URL"), os.Getenv("DRONE_REPO_OWNER"), os.Getenv("DRONE_REPO_NAME"), os.Getenv("DRONE_TOKEN"), "", client.Insecure, l)
 	if errors.Is(err, EmptyInput) {
 		t.Log(err)
-		t.Log("Some inputs required for real life test not provided, skipping")
-		return
+		t.Skip("Some inputs required for real life test not provided (passed as env vars), skipping test")
 	}
 	if err != nil {
 		for _, w := range l.Warnings {

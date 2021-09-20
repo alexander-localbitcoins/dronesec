@@ -11,12 +11,6 @@ import (
 	"github.com/drone/drone-go/drone"
 )
 
-type DroneSecOptions uint32
-
-const (
-	Insecure DroneSecOptions = 1 << iota // Ignore invalid certificates
-)
-
 var EmptyInput = errors.New("Input cannot be empty")
 
 // Struct for creating drone secrets. If log is nil logging will be disabled
