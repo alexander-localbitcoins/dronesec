@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,7 +14,8 @@ import (
 )
 
 const usage string = `USAGE: Secret must be a file named "secret_name.secret" where the filename without extension will be used as the secret name and content as data. You place multiple secrets if you want. Configuration is done using the following environmental variables:
-DRONE_REMOTE_URL
+DRONE_SYSTEM_PROTO
+DRONE_SYSTEM_HOST
 DRONE_REPO_OWNER
 DRONE_REPO_NAME
 DRONE_TOKEN
@@ -62,9 +64,9 @@ func main() {
 	} else {
 		flags = 0
 	}
-	ds, err := dronesec.NewDroneSec(os.Getenv("DRONE_REMOTE_URL"), os.Getenv("DRONE_REPO_OWNER"), os.Getenv("DRONE_REPO_NAME"), os.Getenv("DRONE_TOKEN"), "", flags, log)
+	ds, err := dronesec.NewDroneSec((&url.URL{Scheme: os.Getenv("DRONE_SYSTEM_PROTO"), Host: os.Getenv("DRONE_SYSTEM_HOST")}).String(), os.Getenv("DRONE_REPO_OWNER"), os.Getenv("DRONE_REPO_NAME"), os.Getenv("DRONE_TOKEN"), "", flags, log)
 	if err != nil {
-		log.Error(err)
+		log.Debug(err)
 		log.Info(usage)
 		os.Exit(2)
 	}

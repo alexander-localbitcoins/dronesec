@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -66,7 +67,7 @@ func TestDroneSec(t *testing.T) {
 
 func TestDroneSecWithRealEndpoint(t *testing.T) {
 	l := new(mock.MockLogger)
-	ds, err := NewDroneSec(os.Getenv("DRONE_REMOTE_URL"), os.Getenv("DRONE_REPO_OWNER"), os.Getenv("DRONE_REPO_NAME"), os.Getenv("DRONE_TOKEN"), "", client.Insecure, l)
+	ds, err := NewDroneSec((&url.URL{Scheme: os.Getenv("DRONE_SYSTEM_PROTO"), Host: os.Getenv("DRONE_SYSTEM_HOST")}).String(), os.Getenv("DRONE_REPO_OWNER"), os.Getenv("DRONE_REPO_NAME"), os.Getenv("DRONE_TOKEN"), "", client.Insecure, l)
 	if errors.Is(err, EmptyInput) {
 		t.Log(err)
 		t.Skip("Some inputs required for real life test not provided (passed as env vars), skipping test")
