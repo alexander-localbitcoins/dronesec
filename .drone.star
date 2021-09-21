@@ -32,12 +32,11 @@ def build_step(test=False):
         "image": "plugins/docker",
         "settings": {
             "username": {"from_secret": "github_username"},
-            "password": {"from_secret": "github_secret"},
+            "password": {"from_secret": "github_token"},
             "context": "./docker/",
             "dockerfile": "./docker/Dockerfile",
-            "repo": "ghcr.io/localbitcoins/dronesecret",
+            "repo": "ghcr.io/localbitcoins/dronesec",
             "registry": "ghcr.io",
-
         },
     }
     if test:
