@@ -31,8 +31,8 @@ def build_step(test=False):
         "name": "build-container",
         "image": "plugins/docker",
         "settings": {
-            "username": {"from_secret": "registry_username"},
-            "password": {"from_secret": "registry_secret"},
+            "username": {"from_secret": "github_username"},
+            "password": {"from_secret": "github_secret"},
             "context": "./docker/",
             "dockerfile": "./docker/Dockerfile",
             "repo": "ghcr.io/localbitcoins/dronesecret",
