@@ -57,18 +57,30 @@ func (d *droneSec) Create(secret string, data string) error {
 		Data:        data,
 		PullRequest: true,
 	}
-	if _, err := d.client.Secret(d.owner, d.repo, secret); err != nil && strings.Contains(err.Error(), "no rows in result set") {
-		_, err := d.client.SecretCreate(d.owner, d.repo, sec)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	} else {
-		d.log.Warning("Overwriting old secret")
-		if _, err := d.client.SecretUpdate(d.owner, d.repo, sec); err != nil {
+	if _, err := d.client.SecretCreate(d.owner, d.repo, sec); err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: secrets.secret_repo_id, secrets.secret_name") {
+			d.log.Debug(err)
+			d.log.Warning("Overwriting old secret")
+			if _, err := d.client.SecretUpdate(d.owner, d.repo, sec); err != nil {
+				return err
+			}
+		} else {
 			return err
 		}
 	}
+	d.log.Info(fmt.Sprintf("Succesfully pushed %s to drone server", secret))
+	return nil
+}
+
+func (d *droneSec) Delete(secret string) error {
+	if err := d.client.SecretDelete(d.owner, d.repo, secret); err != nil {
+		if strings.Contains(err.Error(), "sql: no rows in result set") {
+			d.log.Debug(err)
+			d.log.Warning("Secret not found, could not delete")
+			return nil
+		}
+		return err
+	}
+	d.log.Info(fmt.Sprintf("Deleted secret %s", secret))
 	return nil
 }
