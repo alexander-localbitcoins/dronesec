@@ -4,10 +4,10 @@ def main(ctx):
             "kind": "pipeline",
             "type": "docker",
             "name": "dronesecret",
-            "trigger": {"event": ["push"]},
+            "trigger": {"event": ["push", "tag"]},
             "steps": [
                 test_step,
-                build_step() if ctx.build.branch == "main" and ctx.build.event == "push" else build_step(True),
+                build_step() if ctx.build.branch == "main" and ctx.build.event == "tag" else build_step(True),
             ],
             "node": {"docker": "slow"},
         },
