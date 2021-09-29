@@ -13,6 +13,11 @@ import (
 
 var EmptyInput = errors.New("Input cannot be empty")
 
+type DroneSec interface {
+	Create(string, string) error
+	Delete(string) error
+}
+
 // Struct for creating drone secrets. If log is nil logging will be disabled
 func NewDroneSec(host string, owner string, repo string, token string, certsLocation string, flags client.BuilderFlags, log logger.Logger) (*droneSec, error) {
 	d := new(droneSec)
